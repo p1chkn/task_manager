@@ -16,8 +16,24 @@ class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
+    def get_queryset(self):
+        queryset = Task.objects.filter(author=self.request.user)
+        return queryset
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+        
 
 @api_view(['POST'])
 def user_register(request):
-    if request.POST:
+    username = request.POST.get('username', '')
+    password = request.POST.get('password', '')
+    if User.objects.filter(username=username).first():
+        return Response({'error': 'User already exist!'})
+    if username and password:
+        user = User.objects.create(username=username)
+        user.set_password(password)
+        user.save()
         return Response(status=status.HTTP_201_CREATED)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
