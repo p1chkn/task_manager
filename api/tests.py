@@ -1,3 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.urls import reverse
+from .models impotr Task, HistoryTask
 
-# Create your tests here.
+
+class ApiTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        

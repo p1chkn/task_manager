@@ -40,6 +40,7 @@ class Task(models.Model):
     def __str__(self):
         return self.title
 
+
 class HistoryTask(models.Model):
     NEW = 'NW'
     PLANNED = 'PL'

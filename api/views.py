@@ -22,18 +22,17 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-        
+
 
 @api_view(['POST'])
 def user_register(request):
     username = request.POST.get('username', '')
     password = request.POST.get('password', '')
     if User.objects.filter(username=username).first():
-        return Response({'error': 'User already exist!'})
+        return Response('User already exist!')
     if username and password:
-        user = User.objects.create(username=username)
-        user.set_password(password)
-        user.save()
-        return Response(status=status.HTTP_201_CREATED)
+        User.objects.create_user(username=username, password=password)
+        return Response('User created!',status=status.HTTP_201_CREATED)
     else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response('You need gave password and username.',
+                        status=status.HTTP_400_BAD_REQUEST)
