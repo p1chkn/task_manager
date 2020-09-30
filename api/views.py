@@ -1,13 +1,13 @@
 from rest_framework import viewsets, filters, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from .models import Task, User
-from .serializers import TaskSerializer
+from .models import Task, User, HistoryTask
+from .serializers import TaskSerializer, HistoryTaskSerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -22,6 +22,18 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+@api_view(['GET'])
+def history_task(request, task_id):
+    auth = JWTAuthentication()
+    user = auth.authenticate(request)[0]
+    task = get_object_or_404(Task, id=task_id)
+    if user != task.author:
+        return Response('Not allowed', status=status.HTTP_403_FORBIDDEN)
+    task_history = HistoryTask.objects.filter(task=task)
+    serializer = HistoryTaskSerializer(task_history, many=True)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
