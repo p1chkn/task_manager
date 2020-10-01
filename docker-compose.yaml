@@ -1,0 +1,23 @@
+version: '3.3'
+
+
+volumes:
+  postgres_data:
+
+services:
+  db:
+    image: postgres:latest
+
+    volumes:
+      - postgres_data:/var/lib/postgresql_task/data/
+    env_file:
+      - ./.env
+  web:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - ./task_manager/.env

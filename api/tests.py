@@ -1,8 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from rest_framework.test import force_authenticate, APIClient
-from .models import Task, HistoryTask, User
-from .views import TaskViewSet
+from rest_framework.test import APIClient
+from .models import Task, User
 
 
 class ApiTest(TestCase):
@@ -16,7 +15,7 @@ class ApiTest(TestCase):
         self.user = User.objects.create_user(
             username='test_user',
             password='12345'
-        ) 
+        )
         self.password = '12345'
         Task.objects.create(author=self.user, title='test_task_1',
                             description='task for testing',
@@ -62,21 +61,21 @@ class ApiTest(TestCase):
         Test no auth task all/single.
         """
         responce = self.client.get('/api/v1/tasks/')
-        self.assertEqual(responce.status_code, 401, 
+        self.assertEqual(responce.status_code, 401,
                          msg="Not auth users can't accese tasks!")
         responce = self.client.get('/api/v1/tasks/1/')
-        self.assertEqual(responce.status_code, 401, 
+        self.assertEqual(responce.status_code, 401,
                          msg="Not auth users can't accese tasks!")
         """
         Test user tasks singl and all.
         """
         self.api_client.force_authenticate(user=self.user)
         responce = self.api_client.get('/api/v1/tasks/')
-        self.assertEqual(responce.status_code, 200, 
+        self.assertEqual(responce.status_code, 200,
                          msg='Problems with acces own tasks')
         self.assertContains(responce, self.task)
         responce = self.api_client.get('/api/v1/tasks/1/')
-        self.assertEqual(responce.status_code, 200, 
+        self.assertEqual(responce.status_code, 200,
                          msg='Problems with acces own task')
         self.assertContains(responce, self.task)
         """
@@ -87,9 +86,9 @@ class ApiTest(TestCase):
         self.assertEqual(len(responce.data), 0,
                          msg='Another users can see your tasks')
         responce = self.api_client.get('/api/v1/tasks/1/')
-        self.assertEqual(responce.status_code, 404, 
+        self.assertEqual(responce.status_code, 404,
                          msg='Another users can see your task')
-    
+
     def test_create_task(self):
         new_task = {
             'author': self.user,
@@ -136,23 +135,44 @@ class ApiTest(TestCase):
         responce_auth = self.client.post(reverse('token_obtain_pair'), data)
         token = responce_auth.data['access']
         url = '/api/v1/history/1/'
-
-        responce = self.client.get(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        """
+        Test adding history whel altered task.
+        """
+        responce = self.client.get(
+            url, {},
+            HTTP_AUTHORIZATION='Bearer {}'.format(token)
+            )
         len_old = len(responce.data)
         self.api_client.force_authenticate(user=self.user)
         self.api_client.patch('/api/v1/tasks/1/', alter_task)
-        responce = self.client.get(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        responce = self.client.get(
+            url, {},
+            HTTP_AUTHORIZATION='Bearer {}'.format(token)
+            )
         len_new = len(responce.data)
         self.assertContains(responce, 'history_title')
         self.assertEqual(len_new-1, len_old)
-
-        responce = self.client.post(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        """
+        Check that user can't edit HistoryTask table.
+        """
+        responce = self.client.post(
+            url, {},
+            HTTP_AUTHORIZATION='Bearer {}'.format(token)
+            )
         self.assertEqual(responce.status_code, 405)
-        responce = self.client.patch(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        responce = self.client.patch(
+            url, {},
+            HTTP_AUTHORIZATION='Bearer {}'.format(token)
+            )
         self.assertEqual(responce.status_code, 405)
-
+        """
+        Check that if user deleted task, history will be deleted too .
+        """
         self.api_client.force_authenticate(user=self.user)
         responce = self.api_client.delete('/api/v1/tasks/1/')
         self.assertEqual(responce.status_code, 204)
-        responce = self.client.get(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        responce = self.client.get(
+            url, {},
+            HTTP_AUTHORIZATION='Bearer {}'.format(token)
+            )
         self.assertEqual(responce.status_code, 404)
