@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from rest_framework.test import force_authenticate, APIRequestFactory
+from rest_framework.test import force_authenticate, APIClient
 from .models import Task, HistoryTask, User
 from .views import TaskViewSet
 
@@ -8,6 +8,7 @@ from .views import TaskViewSet
 class ApiTest(TestCase):
     def setUp(self):
         self.client = Client()
+        self.api_client = APIClient()
         self.alter_user = User.objects.create_user(
             username='alter_user',
             password='12345'
@@ -56,29 +57,50 @@ class ApiTest(TestCase):
                          msg='Problem with auth')
         self.assertTrue(responce_auth.data['access'], msg='Token problem')
 
-    def auth(self):
-        data = {
-            'username': self.user.username,
-            'password': self.password,
-        }
-        responce_auth = self.client.post(reverse('token_obtain_pair'), data)
-        token = responce_auth.data['access']
-        return 'Bearer ' + token
-
     def test_task_get(self):
+        """
+        Test no auth task all/single.
+        """
         responce = self.client.get('/api/v1/tasks/')
         self.assertEqual(responce.status_code, 401, 
                          msg="Not auth users can't accese tasks!")
-        
-        factory = APIRequestFactory()
-        veiw = TaskViewSet.as_view({'get': 'list'})
-
-        request = factory.get('/api/v1/tasks/')
-        force_authenticate(request, user=self.user)
-        responce = veiw(request)
+        responce = self.client.get('/api/v1/tasks/1/')
+        self.assertEqual(responce.status_code, 401, 
+                         msg="Not auth users can't accese tasks!")
+        """
+        Test user tasks singl and all.
+        """
+        self.api_client.force_authenticate(user=self.user)
+        responce = self.api_client.get('/api/v1/tasks/')
         self.assertEqual(responce.status_code, 200, 
                          msg='Problems with acces own tasks')
-        force_authenticate(request, user=self.alter_user)
-        responce = veiw(request)
+        self.assertContains(responce, self.task)
+        responce = self.api_client.get('/api/v1/tasks/1/')
+        self.assertEqual(responce.status_code, 200, 
+                         msg='Problems with acces own task')
+        self.assertContains(responce, self.task)
+        """
+        Test access to others tasks.
+        """
+        self.api_client.force_authenticate(user=self.alter_user)
+        responce = self.api_client.get('/api/v1/tasks/')
         self.assertEqual(len(responce.data), 0,
                          msg='Another users can see your tasks')
+        responce = self.api_client.get('/api/v1/tasks/1/')
+        self.assertEqual(responce.status_code, 404, 
+                         msg='Another users can see your task')
+    
+    def test_create_task(self):
+        new_task = {
+            'author': self.user,
+            'title': 'test_new',
+            'description': 'new test task',
+            'status': 'DN',
+        }
+        self.api_client.force_authenticate(user=self.user)
+        url = '/api/v1/tasks/'
+        responce = self.api_client.post(url, new_task)
+        self.assertEqual(responce.status_code, 201)
+
+    def test_alter_task(self):
+        pass
