@@ -14,7 +14,7 @@ urlpatterns = [
     path('v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('v1/token/refresh/', TokenRefreshView.as_view(),
          name='token_refresh'),
-    path('v1/user/registration/', user_register),
+    path('v1/user/registration/', user_register, name='registration'),
     path('v1/history/<int:task_id>/', history_task),
     path('', include(router.urls)),
 ]

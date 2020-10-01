@@ -5,4 +5,5 @@
         "--load-plugins", "pylint_django"
     ],
     "python.linting.pylintEnabled": false,
+    "python.pythonPath": "venv\\Scripts\\python.exe",
 }
