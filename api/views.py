@@ -15,6 +15,8 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['=status', '=finish_date']
 
     def get_queryset(self):
         queryset = Task.objects.filter(author=self.request.user)
