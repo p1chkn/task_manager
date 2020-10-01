@@ -27,7 +27,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 def history_task(request, task_id):
     auth = JWTAuthentication()
-    user = auth.authenticate(request)[0]
+    user = auth.authenticate(request)[0] if auth.authenticate(request) else ''
     task = get_object_or_404(Task, id=task_id)
     if user != task.author:
         return Response('Not allowed', status=status.HTTP_403_FORBIDDEN)

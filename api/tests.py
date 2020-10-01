@@ -103,4 +103,56 @@ class ApiTest(TestCase):
         self.assertEqual(responce.status_code, 201)
 
     def test_alter_task(self):
-        pass
+        alter_task = {
+            'title': 'alter_title',
+            'description': 'alter task',
+            'status': 'DN',
+            'finish_date': '2021-01-01',
+        }
+        self.api_client.force_authenticate(user=self.user)
+        url = '/api/v1/tasks/1/'
+        responce = self.api_client.get(url)
+        self.assertNotContains(responce, alter_task)
+        responce = self.api_client.patch(url, alter_task)
+        self.assertContains(responce, 'alter_title')
+        responce = self.api_client.delete('/api/v1/tasks/2/')
+        self.assertEqual(responce.status_code, 204)
+        responce = self.api_client.get('/api/v1/tasks/2/')
+        self.assertEqual(responce.status_code, 404)
+
+    def test_history(self):
+        alter_task = {
+            'title': 'history_title',
+            'description': 'history task',
+            'status': 'IW',
+            'finish_date': '2022-01-01',
+        }
+
+        data = {
+            'username': self.user.username,
+            'password': self.password,
+        }
+
+        responce_auth = self.client.post(reverse('token_obtain_pair'), data)
+        token = responce_auth.data['access']
+        url = '/api/v1/history/1/'
+
+        responce = self.client.get(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        len_old = len(responce.data)
+        self.api_client.force_authenticate(user=self.user)
+        self.api_client.patch('/api/v1/tasks/1/', alter_task)
+        responce = self.client.get(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        len_new = len(responce.data)
+        self.assertContains(responce, 'history_title')
+        self.assertEqual(len_new-1, len_old)
+
+        responce = self.client.post(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        self.assertEqual(responce.status_code, 405)
+        responce = self.client.patch(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        self.assertEqual(responce.status_code, 405)
+
+        self.api_client.force_authenticate(user=self.user)
+        responce = self.api_client.delete('/api/v1/tasks/1/')
+        self.assertEqual(responce.status_code, 204)
+        responce = self.client.get(url, {}, HTTP_AUTHORIZATION='Bearer {}'.format(token))
+        self.assertEqual(responce.status_code, 404)
