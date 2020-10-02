@@ -54,42 +54,31 @@ docker container exec -ti <your container id> python manage.py createsuperuser
 Good luck and have fun!
 ## Instructions to use API
 
-In this manager you can interact with two models: Task and HistoryTask.
-First model is for creating, editing and deleting tasks.
-Second - for watching history of task editing.
+In this manager you can interact with two models: Task and HistoryTask. 
+First model is for creating, editing and deleting tasks. Second - for watching history of task editing.
 
-To interact with this sercive you need to register. 
-Make POST request to: http://localhost:8000/api/v1/user/registration/
-with your account credentials (username, passwod).
+To interact with this service you need to register. 
+Make POST request to: http://localhost:8000/api/v1/user/registration/ with your account credentials (username, passwod).
+Then you need authorization. Make POST request to: http://localhost:8000/api/v1/token/ and you have received your token for access in field 'access'. To interact with service you need to add HEADER parameter to all your requests. ('Authorization': 'Bearer ')
 
-Then you need authorization.
-Make POST request to: http://localhost:8000/api/v1/token/
-and you have resived your token for access in field 'access'.
-To interact with service you need to add HEADER parametr to all your requests.
-('Authorization': 'Bearer <your token>')
+For getting all your tasks, you need to go to: http://localhost:8000/api/v1/tasks/ with GET request.
+For getting single task, you need to go to: http://localhost:8000/api/v1/tasks/<task_id>/ where task_id is id, which you can get in previous paragraph.
 
-For getting all your tasks you need to go to: http://localhost:8000/api/v1/tasks/
-with GET request.
-For getting single task, you need to go to: http://localhost:8000/api/v1/tasks/<task_id>/
-where task_id is id, wich you can get in previous paragraph.
-
-To create a task, you nedd to make a POST request to: http://localhost:8000/api/v1/tasks/
-with this parametrs:
-  'title' : <title of your task>
-  'description': <description of your task>
-  'status':<one of this: New, Planned, In work, Done. Default: New>
-  'finish_date':<optionl parametr for estimated completion date>
+To create a task, you need to make a POST request to: http://localhost:8000/api/v1/tasks/ with this parameters: 
+* 'title' : <title of your task> 
+* 'description': 
+* 'status':<one of this: New, Planned, In work, Done. Default: New> 
+* 'finish_date':
+To editing a task, you need to make a PATCH request to: http://localhost:8000/api/v1/tasks/<task_id>/ where task_id is id of task wich you wanna edit.
   
-To editing a task, you need to make a PATCH request to: http://localhost:8000/api/v1/tasks/<task_id>/
-where task_id is id of task wich you wanna edit.
+To deleting a task, you need to make a DELETE request to: http://localhost:8000/api/v1/tasks/<task_id>/ where task_id is id of task wich you wanna delete.
 
-To deleting a task, you need to make a DELETE request to: http://localhost:8000/api/v1/tasks/<task_id>/
-where task_id is id of task wich you wanna delete.
+To access a history of a task, you need to know ID of this task, then you need to make GET request to: http://localhost:8000/api/v1/history/<task_id>/ 
 
-To access a history of a task, you need to know ID of this task, then you need to make GET request to: http://localhost:8000/api/v1/history/<task_id>/
 To history you can only make GET request. You can't altered history.
 
-Good luck and have fun with this servies.
+Good luck and have fun with this services.
+
 
 ## Authors
 
