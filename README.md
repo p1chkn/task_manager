@@ -56,7 +56,7 @@ If you don't want use fixtures or you want add your own superuser, you need to r
 ```
 
 Also this project have some preinstalled tests:
-You can watch it in ./api/test.py
+You can see it in ./api/test.py
 To run in use:
 ```
 (sudo) docker container exec -ti <your container id> python manage.py test
