@@ -67,9 +67,10 @@ For getting single task, you need to go to: http://localhost:8000/api/v1/tasks/<
 
 To create a task, you need to make a POST request to: http://localhost:8000/api/v1/tasks/ with this parameters: 
 * 'title' : <title of your task> 
-* 'description': 
+* 'description': <description of your task>
 * 'status':<one of this: New, Planned, In work, Done. Default: New> 
-* 'finish_date':
+* 'finish_date':<optional parameter for planned completion date>
+  
 To editing a task, you need to make a PATCH request to: http://localhost:8000/api/v1/tasks/<task_id>/ where task_id is id of task wich you wanna edit.
   
 To deleting a task, you need to make a DELETE request to: http://localhost:8000/api/v1/tasks/<task_id>/ where task_id is id of task wich you wanna delete.
