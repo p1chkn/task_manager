@@ -86,8 +86,7 @@ where task_id is id of task wich you wanna edit.
 To deleting a task, you need to make a DELETE request to: http://localhost:8000/api/v1/tasks/<task_id>/
 where task_id is id of task wich you wanna delete.
 
-To access a history of a task, you need to know ID of this task, then you need to make GET request to:
-http://localhost:8000/api/v1/history/<task_id>/
+To access a history of a task, you need to know ID of this task, then you need to make GET request to: http://localhost:8000/api/v1/history/<task_id>/
 To history you can only make GET request. You can't altered history.
 
 Good luck and have fun with this servies.
