@@ -4,7 +4,9 @@ This is an API task manager service. You can create and altered task.
 
 ## Getting Started
 
-You need to download project from here, GitHub.
+You need to download project from here, GitHub. 
+Or you can access it here: http://130.193.42.246:8000/
+With fixtures data. Instructions for using API and credentials for preset user you can find below.
 
 ### Prerequisites
 
@@ -51,7 +53,6 @@ If you don't want use fixtures or you want add your own superuser, you need to r
 docker container exec -ti <your container id> python manage.py createsuperuser
 ```
 
-Good luck and have fun!
 ## Instructions to use API
 
 In this manager you can interact with two models: Task and HistoryTask. 
