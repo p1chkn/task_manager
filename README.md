@@ -36,11 +36,11 @@ Run this command:
 and you find some containers running. We need container with IMAGE name task_manager_web and copy ID.
 Then you need to run this:
 ```
-docker container exec -ti <your container id> python manage.py migrate
+(sudo) docker container exec -ti <your container id> python manage.py migrate
 ```
 After that, if you want some preset data, you have it in this repositories. To apply it, you need to run this:
 ```
-docker container exec -ti <your container id> python manage.py loaddata fixtures.json
+(sudo) docker container exec -ti <your container id> python manage.py loaddata fixtures.json
 ```
 Now you have test superuser with this credentials: 
   username: user 
@@ -50,8 +50,17 @@ You can add some data with localhost:8000/admin
 
 If you don't want use fixtures or you want add your own superuser, you need to run this:
 ```
-docker container exec -ti <your container id> python manage.py createsuperuser
+(sudo) docker container exec -ti <your container id> python manage.py createsuperuser
 ```
+
+Also this project have some preinstalled tests:
+You can watch it in ./api/test.py
+To run in use:
+```
+(sudo) docker container exec -ti <your container id> python manage.py test
+```
+
+
 
 ## Instructions to use API
 
