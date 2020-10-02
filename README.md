@@ -2,6 +2,8 @@
 
 This is an API task manager service. You can create and altered task.
 
+Web part works on Django. Database - postgresql.
+
 ## Getting Started
 
 You need to download project from here, GitHub. 
