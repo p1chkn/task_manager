@@ -63,7 +63,7 @@ class ApiTest(TestCase):
         responce = self.client.get('/api/v1/tasks/')
         self.assertEqual(responce.status_code, 401,
                          msg="Not auth users can't accese tasks!")
-        responce = self.client.get('/api/v1/tasks/1/')
+        responce = self.client.get(f'/api/v1/tasks/{self.task.pk}/')
         self.assertEqual(responce.status_code, 401,
                          msg="Not auth users can't accese tasks!")
         """
@@ -74,7 +74,7 @@ class ApiTest(TestCase):
         self.assertEqual(responce.status_code, 200,
                          msg='Problems with acces own tasks')
         self.assertContains(responce, self.task)
-        responce = self.api_client.get('/api/v1/tasks/1/')
+        responce = self.api_client.get(f'/api/v1/tasks/{self.task.pk}/')
         self.assertEqual(responce.status_code, 200,
                          msg='Problems with acces own task')
         self.assertContains(responce, self.task)
@@ -85,7 +85,7 @@ class ApiTest(TestCase):
         responce = self.api_client.get('/api/v1/tasks/')
         self.assertEqual(len(responce.data), 0,
                          msg='Another users can see your tasks')
-        responce = self.api_client.get('/api/v1/tasks/1/')
+        responce = self.api_client.get(f'/api/v1/tasks/{self.task.pk}/')
         self.assertEqual(responce.status_code, 404,
                          msg='Another users can see your task')
 
@@ -134,7 +134,7 @@ class ApiTest(TestCase):
 
         responce_auth = self.client.post(reverse('token_obtain_pair'), data)
         token = responce_auth.data['access']
-        url = '/api/v1/history/1/'
+        url = f'/api/v1/history/{self.task.pk}/'
         """
         Test adding history whel altered task.
         """
@@ -144,7 +144,7 @@ class ApiTest(TestCase):
             )
         len_old = len(responce.data)
         self.api_client.force_authenticate(user=self.user)
-        self.api_client.patch('/api/v1/tasks/1/', alter_task)
+        self.api_client.patch(f'/api/v1/tasks/{self.task.pk}/', alter_task)
         responce = self.client.get(
             url, {},
             HTTP_AUTHORIZATION='Bearer {}'.format(token)
@@ -169,7 +169,7 @@ class ApiTest(TestCase):
         Check that if user deleted task, history will be deleted too .
         """
         self.api_client.force_authenticate(user=self.user)
-        responce = self.api_client.delete('/api/v1/tasks/1/')
+        responce = self.api_client.delete(f'/api/v1/tasks/{self.task.pk}/')
         self.assertEqual(responce.status_code, 204)
         responce = self.client.get(
             url, {},
