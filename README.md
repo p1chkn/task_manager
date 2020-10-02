@@ -60,9 +60,17 @@ First model is for creating, editing and deleting tasks. Second - for watching h
 
 To interact with this service you need to register. 
 Make POST request to: http://localhost:8000/api/v1/user/registration/ with your account credentials (username, passwod).
-Then you need authorization. Make POST request to: http://localhost:8000/api/v1/token/ and you have received your token for access in field 'access'. To interact with service you need to add HEADER parameter to all your requests. ('Authorization': 'Bearer ')
+
+Then you need authorization. Make POST request to: http://localhost:8000/api/v1/token/ and you have received your token for access in field 'access'. 
+
+To interact with service you need to add HEADER parameter to all your requests. ('Authorization': 'Bearer ')
 
 For getting all your tasks, you need to go to: http://localhost:8000/api/v1/tasks/ with GET request.
+
+For filtering your tasks, you can use filtres for status and finish date like this: http://localhost:8000/api/v1/tasks/?search=<paramets>
+ 
+Where parametr is desired value.
+
 For getting single task, you need to go to: http://localhost:8000/api/v1/tasks/<task_id>/ where task_id is id, which you can get in previous paragraph.
 
 To create a task, you need to make a POST request to: http://localhost:8000/api/v1/tasks/ with this parameters: 
